@@ -174,6 +174,7 @@ final class TaskSubscriberTest extends TestCase
 
         $content = $response->getContent();
         self::assertIsString($content);
+        self::assertIsArray(json_decode($content, true, 512, JSON_THROW_ON_ERROR));
         self::assertArrayHasKey('code', json_decode($content, true, 512, JSON_THROW_ON_ERROR));
         self::assertArrayHasKey('message', json_decode($content, true, 512, JSON_THROW_ON_ERROR));
         self::assertArrayHasKey('trace', json_decode($content, true, 512, JSON_THROW_ON_ERROR));
@@ -215,6 +216,7 @@ final class TaskSubscriberTest extends TestCase
 
         $content = $response->getContent();
         self::assertIsString($content);
+        self::assertIsArray(json_decode($content, true, 512, JSON_THROW_ON_ERROR));
         self::assertArrayHasKey('code', json_decode($content, true, 512, JSON_THROW_ON_ERROR));
         self::assertSame(Response::HTTP_OK, json_decode($content, true, 512, JSON_THROW_ON_ERROR)['code']);
         self::assertArrayHasKey('tasks', json_decode($content, true, 512, JSON_THROW_ON_ERROR));

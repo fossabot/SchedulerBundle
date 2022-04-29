@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SchedulerBundle\Command;
 
 use ReflectionClass;
-use SchedulerBundle\Middleware\MiddlewareStackInterface;
 use SchedulerBundle\Middleware\OrderedMiddlewareInterface;
 use SchedulerBundle\Middleware\PostExecutionMiddlewareInterface;
 use SchedulerBundle\Middleware\PostSchedulingMiddlewareInterface;
@@ -34,8 +33,8 @@ final class DebugMiddlewareCommand extends Command
     protected static $defaultName = 'scheduler:debug:middleware';
 
     public function __construct(
-        private SchedulerMiddlewareStackInterface|MiddlewareStackInterface $schedulerMiddlewareStack,
-        private WorkerMiddlewareStackInterface|MiddlewareStackInterface $workerMiddlewareStack
+        private SchedulerMiddlewareStackInterface $schedulerMiddlewareStack,
+        private WorkerMiddlewareStackInterface $workerMiddlewareStack
     ) {
         parent::__construct();
     }
@@ -46,7 +45,7 @@ final class DebugMiddlewareCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Display the registered middlewares')
+            ->setDescription(description: 'Display the registered middlewares')
         ;
     }
 
@@ -55,15 +54,15 @@ final class DebugMiddlewareCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $style = new SymfonyStyle($input, $output);
+        $style = new SymfonyStyle(input: $input, output: $output);
 
         $schedulerMiddlewareList = $this->schedulerMiddlewareStack->getMiddlewareList();
         if ([] === $schedulerMiddlewareList) {
-            $style->warning('No middleware found for the scheduling phase');
+            $style->warning(message: 'No middleware found for the scheduling phase');
         } else {
-            $style->info(sprintf('Found %d middleware for the scheduling phase', count($schedulerMiddlewareList)));
+            $style->info(message: sprintf('Found %d middleware for the scheduling phase', count($schedulerMiddlewareList)));
 
-            $schedulerTable = new Table($output);
+            $schedulerTable = new Table(output: $output);
             $schedulerTable->setHeaders(['Name', 'PreScheduling', 'PostScheduling', 'Priority', 'Required']);
             $schedulerTable->addRows(array_map(static fn (PostExecutionMiddlewareInterface|PreExecutionMiddlewareInterface|PreSchedulingMiddlewareInterface|PostSchedulingMiddlewareInterface|RequiredMiddlewareInterface|OrderedMiddlewareInterface $middleware): array => [
                 (new ReflectionClass($middleware))->getShortName(),

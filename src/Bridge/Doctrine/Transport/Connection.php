@@ -6,6 +6,7 @@ namespace SchedulerBundle\Bridge\Doctrine\Transport;
 
 use Doctrine\DBAL\Connection as DBALConnection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\Expr;
@@ -325,7 +326,7 @@ final class Connection extends AbstractDoctrineConnection implements ConnectionI
     /**
      * {@inheritdoc}
      */
-    protected function executeQuery(string $sql, array $parameters = [], array $types = [])
+    protected function executeQuery(string $sql, array $parameters = [], array $types = []): Result
     {
         try {
             return $this->dbalConnection->executeQuery($sql, $parameters, $types);

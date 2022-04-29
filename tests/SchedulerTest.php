@@ -9,7 +9,6 @@ use DateTimeZone;
 use Exception;
 use Generator;
 use PDO;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use SchedulerBundle\Event\TaskScheduledEvent;
 use SchedulerBundle\Event\TaskUnscheduledEvent;
@@ -85,44 +84,15 @@ use function sys_get_temp_dir;
 /**
  * @author Guillaume Loulier <contact@guillaumeloulier.fr>
  */
-final class SchedulerTest extends TestCase
+final class SchedulerTest extends AbstractSchedulerTestCase
 {
-    /**
-     * @throws Exception {@see Scheduler::__construct()}
-     * @throws Throwable {@see SchedulerInterface::schedule()}
-     */
-    public function testSchedulerCanScheduleTasks(): void
+    protected function buildScheduler(): SchedulerInterface
     {
-        $task = new NullTask('foo');
-
-        $scheduler = new Scheduler('UTC', new InMemoryTransport(new InMemoryConfiguration([
+        return new Scheduler('UTC', new InMemoryTransport(new InMemoryConfiguration([
             'execution_mode' => 'first_in_first_out',
         ]), new SchedulePolicyOrchestrator([
             new FirstInFirstOutPolicy(),
         ])), new SchedulerMiddlewareStack(new MiddlewareRegistry([])), new EventDispatcher());
-
-        $scheduler->schedule($task);
-        self::assertCount(1, $scheduler->getTasks());
-    }
-
-    /**
-     * @throws Exception {@see Scheduler::__construct()}
-     * @throws Throwable {@see SchedulerInterface::schedule()}
-     */
-    public function testSchedulerCanScheduleTasksWithCustomTimezone(): void
-    {
-        $task = new NullTask('foo', [
-            'timezone' => new DateTimeZone('Europe/Paris'),
-        ]);
-
-        $scheduler = new Scheduler('UTC', new InMemoryTransport(new InMemoryConfiguration([
-            'execution_mode' => 'first_in_first_out',
-        ]), new SchedulePolicyOrchestrator([
-            new FirstInFirstOutPolicy(),
-        ])), new SchedulerMiddlewareStack(new MiddlewareRegistry([])), new EventDispatcher());
-
-        $scheduler->schedule($task);
-        self::assertCount(1, $scheduler->getTasks());
     }
 
     /**
@@ -1738,22 +1708,6 @@ final class SchedulerTest extends TestCase
 
         $timezone = $scheduler->getTimezone();
         self::assertSame('UTC', $timezone->getName());
-    }
-
-    /**
-     * @throws Exception {@see Scheduler::__construct()}
-     * @throws Throwable {@see SchedulerInterface::getPoolConfiguration()}
-     */
-    public function testSchedulerPoolConfigurationIsAvailable(): void
-    {
-        $scheduler = new Scheduler('UTC', new InMemoryTransport(new InMemoryConfiguration(), new SchedulePolicyOrchestrator([
-            new FirstInFirstOutPolicy(),
-        ])), new SchedulerMiddlewareStack(new MiddlewareRegistry([])), new EventDispatcher());
-
-        $poolConfiguration = $scheduler->getPoolConfiguration();
-        self::assertSame('UTC', $poolConfiguration->getTimezone()->getName());
-        self::assertArrayNotHasKey('foo', $poolConfiguration->getDueTasks());
-        self::assertCount(0, $poolConfiguration->getDueTasks());
     }
 
     /**

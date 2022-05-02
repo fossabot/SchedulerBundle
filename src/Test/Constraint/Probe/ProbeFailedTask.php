@@ -30,6 +30,10 @@ final class ProbeFailedTask extends Constraint
      */
     protected function matches($other): bool
     {
+        if (!$other instanceof ProbeInterface) {
+            return false;
+        }
+
         return $this->expectedCount === $other->getFailedTasks();
     }
 }

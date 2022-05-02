@@ -34,6 +34,10 @@ final class ProbeState extends Constraint
      */
     protected function matches($other): bool
     {
+        if (!$other instanceof ProbeInterface) {
+            return false;
+        }
+
         return $this->expectedState === [
             'executedTasks' => $other->getExecutedTasks(),
             'failedTasks' => $other->getFailedTasks(),

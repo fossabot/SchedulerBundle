@@ -32,6 +32,10 @@ final class TaskExecuted extends Constraint
      */
     protected function matches($other): bool
     {
+        if (!$other instanceof TaskEventList) {
+            return false;
+        }
+
         return $this->expectedCount === $this->countExecutedTasks($other);
     }
 

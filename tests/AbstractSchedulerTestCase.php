@@ -46,8 +46,10 @@ abstract class AbstractSchedulerTestCase extends TestCase
         ]));
 
         $tasks = $scheduler->getTasks();
+        $fooTask = $tasks->get('foo');
         self::assertCount(1, $tasks);
-        self::assertSame('Europe/Paris', $tasks->get('foo')->getTimezone()->getName());
+        self::assertInstanceOf(DateTimeZone::class, $fooTask->getTimezone());
+        self::assertSame('Europe/Paris', $fooTask->getName());
     }
 
     /**
